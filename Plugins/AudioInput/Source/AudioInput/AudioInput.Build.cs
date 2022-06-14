@@ -26,6 +26,9 @@ public class AudioInput : ModuleRules
 			new string[]
 			{
 				"Core",
+				"Engine",
+				"InputCore",
+				"AudioCaptureCore"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -36,8 +39,7 @@ public class AudioInput : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"Slate",
-				"SlateCore",
+				"SignalProcessing"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

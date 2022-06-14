@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+#include "AudioInputSubsystem.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogAudioInput, Log, All);
 
 class FAudioInputModule : public IModuleInterface
 {
