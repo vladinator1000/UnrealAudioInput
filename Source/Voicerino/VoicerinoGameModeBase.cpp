@@ -6,15 +6,33 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 
+AVoicerinoGameModeBase::AVoicerinoGameModeBase()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 void AVoicerinoGameModeBase::BeginPlay()
 {
+	Super::BeginPlay();
 	const auto GameInstance = UGameplayStatics::GetGameInstance(GetWorld());
-	UAudioInputSubsystem* AudioInput = GameInstance->GetSubsystem<UAudioInputSubsystem>();
-	AudioInput->OnSoundDelegate.AddDynamic(this, &AVoicerinoGameModeBase::InputReceived);
+	AudioInputSubsystem = GameInstance->GetSubsystem<UAudioInputSubsystem>();
+	AudioInputSubsystem->FilterThreshold = 0.06f;
 }
+
+void AVoicerinoGameModeBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	const float AudioInputAmplitude = AudioInputSubsystem->Poll();
+	if(AudioInputAmplitude > 0.f)
+	{
+		InputReceived(AudioInputAmplitude);
+	}
+}
+
 
 void AVoicerinoGameModeBase::InputReceived(float Amplitude)
 {
-	DrawDebugPoint(GetWorld(), FVector(0,0, 50.f), 30.f, FColor::White);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NiagaraSystemToSpawnOnAudioInputReceived, FVector());
+	const FVector Location = FVector(0,0, 500.f * Amplitude);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NiagaraSystemToSpawnOnAudioInputReceived, Location);
 }

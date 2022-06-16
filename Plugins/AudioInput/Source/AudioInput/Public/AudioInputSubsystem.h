@@ -16,23 +16,20 @@ UCLASS()
 class AUDIOINPUT_API UAudioInputSubsystem : public UGameInstanceSubsystem {
   GENERATED_BODY()
 
-	
 public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
+	float Poll() const;
 
-    static int16 constexpr AudioBufferSize = 16;
+    static int16 constexpr AudioBufferSize = 32;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(ClampMin=0.05, ClampMax=0.1))
     float FilterThreshold = 0.07f;
 	
-    UPROPERTY(BlueprintAssignable)
-    FOnSoundDelegate OnSoundDelegate;
-
 	Audio::FEnvelopeFollowerInitParams EnvelopeFollowerInitParams;
-	
 
 private:
     Audio::FAudioCapture AudioCapture;
 	Audio::FEnvelopeFollower EnvelopeFollower;
+	float EnvelopeValue;
 };
