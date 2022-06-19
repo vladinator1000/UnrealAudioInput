@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 #include "AudioInputSubsystem.h"
+#include "AudioGameplayInputListener.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogAudioInput, Log, All)
 

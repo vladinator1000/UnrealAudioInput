@@ -7,8 +7,6 @@
 #include "Subsystems/AudioEngineSubsystem.h"
 #include "AudioInputSubsystem.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoundDelegate, float, Amplitude);
-
 /**
  * Lets you trigger gameplay using audio input from a microphone.
  */
@@ -23,10 +21,22 @@ public:
 
     static int16 constexpr AudioBufferSize = 32;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(ClampMin=0.05, ClampMax=0.1))
-    float FilterThreshold = 0.07f;
-	
 	Audio::FEnvelopeFollowerInitParams EnvelopeFollowerInitParams;
+
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void UpdateEnvelopeFollowerParams(float AttackMs, float ReleaseMs, float AnalysisWindowM);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ClampMin = 0.02, ClampMax = 0.2))
+	float FilterThreshold = 0.07f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ClampMin = 0.0, ClampMax = 2))
+	float AttackTimeMsec = 0.0f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ClampMin = 0.1, ClampMax = 2))
+	float ReleaseTimeMsec = 0.8f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ClampMin = 0.5, ClampMax = 2))
+	float AnalysisWindowMsec = 1.0f;
 
 private:
     Audio::FAudioCapture AudioCapture;

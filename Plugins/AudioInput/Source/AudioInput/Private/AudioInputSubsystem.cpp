@@ -10,9 +10,9 @@ void UAudioInputSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Audio::FAudioCaptureDeviceParams Params;
 	Params.DeviceIndex = 0;
 	
-	EnvelopeFollowerInitParams.AttackTimeMsec = 0.3f;
-	EnvelopeFollowerInitParams.ReleaseTimeMsec = 0.8f;
-	EnvelopeFollowerInitParams.AnalysisWindowMsec = 2.0f;
+	EnvelopeFollowerInitParams.AttackTimeMsec = AttackTimeMsec;
+	EnvelopeFollowerInitParams.ReleaseTimeMsec = ReleaseTimeMsec;
+	EnvelopeFollowerInitParams.AnalysisWindowMsec = AnalysisWindowMsec;
 	EnvelopeFollower = Audio::FEnvelopeFollower(EnvelopeFollowerInitParams);
 
 	Audio::FOnCaptureFunction OnCapture = [this](const float* AudioData, const int32 NumFrames, int32 NumChannels, int32 SampleRate, double StreamTime, bool bOverFlow)
@@ -47,12 +47,28 @@ void UAudioInputSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 void UAudioInputSubsystem::Deinitialize()
 {	
 	AudioCapture.CloseStream();
-	UE_LOG(LogAudioInput, Warning, TEXT("Audio capture stream Closed"))
 	Super::Deinitialize();
 }
 
 float UAudioInputSubsystem::Poll() const
 {
 	return EnvelopeValue;
+}
+
+void UAudioInputSubsystem::UpdateEnvelopeFollowerParams(float AttackMs, float ReleaseMs, float AnalysisWindowMs)
+{
+	if (AudioCapture.IsStreamOpen())
+	{
+		AudioCapture.StopStream();
+	}
+
+	Audio::FEnvelopeFollowerInitParams Params;
+	Params.AttackTimeMsec = AttackMs;
+	Params.ReleaseTimeMsec = ReleaseMs;
+	Params.AnalysisWindowMsec = AnalysisWindowMs;
+	
+	EnvelopeFollower.Init(Params);
+
+	AudioCapture.StartStream();
 }
 
